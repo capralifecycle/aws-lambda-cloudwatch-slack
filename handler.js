@@ -1,32 +1,25 @@
 console.log('[Amazon CloudWatch Notification]');
 
-/*
-   configuration for each condition.
-   add any conditions here
-   */
-var ALARM_CONFIG = [
-  {
-    condition: 'INFO',
-    channel: '#cals-alarms-test',
-    mention: ' ',
-    color: '#FF9F21',
-    severity: 'INFO'
-  },
-  {
-    condition: 'CRITICAL',
-    channel: '#cals-alarms-test',
-    mention: '<@channel> ',
-    color: '#F35A00',
-    severity: 'CRITICAL'
-  },
-  {
-    condition: 'ALARM',
-    channel: '#cals-alarms-test',
-    mention: '<@channel> ',
-    color: '#FF3300',
-    severity: 'ALARM'
-  }
-];
+/* configuration for each condition. Add any conditions here */
+var ALARM_CONFIG = [{
+  condition: 'INFO',
+  channel: '#cals-alarms-test',
+  mention: ' ',
+  color: '#FF9F21',
+  severity: 'INFO'
+}, {
+  condition: 'CRITICAL',
+  channel: '#cals-alarms-test',
+  mention: '<@channel> ',
+  color: '#F35A00',
+  severity: 'CRITICAL'
+}, {
+  condition: 'ALARM',
+  channel: '#cals-alarms-test',
+  mention: '<@channel> ',
+  color: '#FF3300',
+  severity: 'ALARM'
+}];
 
 var SLACK_CONFIG = {
   path: 'https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
@@ -74,27 +67,25 @@ exports.handler = function(event, context) {
   }
 
   var payloadStr = JSON.stringify({
-    'attachments': [
-      {
-        'fallback': alarmMessage,
-        'text': alarmMessage,
-        'mrkdwn_in': ['text'],
-        'username': 'AWS-CloudWatch-Lambda-bot',
-        'fields': [
-          {
-            'title': 'Severity',
-            'value': severity,
-            'short': true
-          }
-        ],
-        'color': color
-      }
-    ],
+    'attachments': [{
+      'fallback': alarmMessage,
+      'text': alarmMessage,
+      'mrkdwn_in': ['text'],
+      'username': 'AWS-CloudWatch-Lambda-bot',
+      'fields': [{
+        'title': 'Severity',
+        'value': severity,
+        'short': true
+      }],
+      'color': color
+    }],
     'channel':channel
   });
+
   var postData = querystring.stringify({
     'payload': payloadStr
   });
+
   console.log(postData);
   var options = {
     hostname: 'hooks.slack.com',
