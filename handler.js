@@ -1,4 +1,4 @@
-console.log('Loading function');
+console.log('[Amazon CloudWatch Notification]');
 
 /*
  If any namespaces are listed, lambda will only process those alarms.
