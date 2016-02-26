@@ -1,28 +1,42 @@
 console.log('[Amazon CloudWatch Notification]');
 
-/* configuration for each condition. Add any conditions here */
-var ALARM_CONFIG = [{
-  condition: 'INFO',
-  channel: '#cals-alarms-test',
-  mention: ' ',
-  color: '#FF9F21',
-  severity: 'INFO'
-}, {
-  condition: 'CRITICAL',
-  channel: '#cals-alarms-test',
-  mention: '<@channel> ',
-  color: '#F35A00',
-  severity: 'CRITICAL'
-}, {
-  condition: 'ALARM',
-  channel: '#cals-alarms-test',
-  mention: '<@channel> ',
-  color: '#FF3300',
-  severity: 'ALARM'
-}];
+/*
+ configuration for each condition.
+ add any conditions here
+ */
+var ALARM_CONFIG = [
+  {
+    condition: "OK",
+    channel: "#cals-alarms-devtest",
+    mention: " ",
+    color: "#2AB27B",
+    severity: "ALARM"
+  },
+  {
+    condition: "INFO",
+    channel: "#cals-alarms-devtest",
+    mention: " ",
+    color: "#FF9F21",
+    severity: "INFO"
+  },
+  {
+    condition: "CRITICAL",
+    channel: "#cals-alarms-devtest",
+    mention: "<@channel> ",
+    color: "#F35A00",
+    severity: "CRITICAL"
+  },
+  {
+    condition: "ALARM",
+    channel: "#cals-alarms-devtest",
+    mention: "<@channel> ",
+    color: "#FF3300",
+    severity: "ALARM"
+  }
+];
 
 var SLACK_CONFIG = {
-  path: 'https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+  path: "https://hooks.slack.com/services/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",
 };
 
 var http = require ('https');
@@ -41,19 +55,19 @@ exports.handler = function(event, context) {
   var color;
 
   // create post message
-  var alarmMessage = ' *[Amazon CloudWatch Notification]* \n'+
-    'Subject: '+subject+'\n'+
-    'Message: '+message+'\n'+
-    'Timestamp: '+timestamp;
+  var alarmMessage = " *[Amazon CloudWatch Notification]* \n"+
+    "Subject: "+subject+"\n"+
+    "Message: "+message+"\n"+
+    "Timestamp: "+timestamp;
 
   // check subject for condition
   for (var i=0; i < ALARM_CONFIG.length; i++) {
     var row = ALARM_CONFIG[i];
     console.log(row);
     if (subject.match(row.condition)) {
-      console.log('Matched condition: '+row.condition);
+      console.log("Matched condition: "+row.condition);
 
-      alarmMessage = row.mention+' '+alarmMessage+' ';
+      alarmMessage = row.mention+" "+alarmMessage+" ";
       channel = row.channel;
       severity = row.severity;
       color = row.color;
@@ -62,33 +76,35 @@ exports.handler = function(event, context) {
   }
 
   if (!channel) {
-    console.log('Could not find condition. (for: ' + subject + ')');
-    context.done('error', 'Invalid condition');
+    console.log("Could not find condition. (for: " + subject + ")");
+    context.done('error', "Invalid condition");
   }
 
   var payloadStr = JSON.stringify({
-    'attachments': [{
-      'fallback': alarmMessage,
-      'text': alarmMessage,
-      'mrkdwn_in': ['text'],
-      'username': 'AWS-CloudWatch-Lambda-bot',
-      'fields': [{
-        'title': 'Severity',
-        'value': severity,
-        'short': true
-      }],
-      'color': color
-    }],
-    'channel':channel
+    "attachments": [
+      {
+        "fallback": alarmMessage,
+        "text": alarmMessage,
+        "mrkdwn_in": ["text"],
+        "username": "AWS-CloudWatch-Lambda-bot",
+        "fields": [
+          {
+            "title": "Severity",
+            "value": severity,
+            "short": true
+          }
+        ],
+        "color": color
+      }
+    ],
+    "channel":channel
   });
-
   var postData = querystring.stringify({
-    'payload': payloadStr
+    "payload": payloadStr
   });
-
   console.log(postData);
   var options = {
-    hostname: 'hooks.slack.com',
+    hostname: "hooks.slack.com",
     port: 443,
     path: SLACK_CONFIG.path,
     method: 'POST',
@@ -99,8 +115,8 @@ exports.handler = function(event, context) {
   };
 
   var req = http.request(options, function(res) {
-    console.log('Got response: ' + res.statusCode);
-    res.on('data', function(chunk) {
+    console.log("Got response: " + res.statusCode);
+    res.on("data", function(chunk) {
       console.log('BODY: '+chunk);
       context.done(null, 'done!');
     });
